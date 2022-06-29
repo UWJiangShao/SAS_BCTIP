@@ -347,15 +347,15 @@ set sashelp.cars;
 run;
 
 title 'Question 8 Answer';
-proc sql;
-select MSRP from cars
-group by MSRP;
-quit;
+**proc sql;
+**select MSRP from cars
+**group by MSRP;
+**quit;
 ******* Question 9: Using the dataset you created in Question 8, report the number 
 		of cars in each MSRP group **********************************************;
 
 
-
+************Not Sure How to do these two!************
 
 
 
@@ -387,13 +387,24 @@ quit;
 data cars;
 set sashelp.cars;
 run;
-
+title 'Question 10 Answer';
+proc sql;
+select Make, Model, MPG_Highway from cars 
+where MPG_Highway > 35
+group by MPG_Highway;
+quit;
 
 
 
 
 ******* Question 11:  Using the dataset you created in Question 10, 
 		select the unique makes that have at least one car that is fuel efficient. ;
+title 'Question 11 Answer';
+proc sql;
+select distinct Make from (select Make, Model, MPG_Highway from cars 
+where MPG_Highway > 35
+group by MPG_Highway);
+quit;
 
 
 
@@ -402,13 +413,14 @@ run;
 
 ******* Question 12: How long did it take you to complete this assignment? ********************;
 
-
+********About 3 hours********
 
 
 ******* Question 13: With 1 being the easiest and 10 being the hardest, how difficult did you
 		find this assignment? ****************************************************************;
 
-
+********10 and 11 easy (similar as previous), 8 and 9 hard********
+********SAS skill got rusty now, take some times to recap********
 
 
 ******* Question 14: Any other additional feedback? *******************************************;
