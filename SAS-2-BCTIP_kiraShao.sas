@@ -14,17 +14,7 @@ libname data "&proj.Example\";
 PROC IMPORT datafile = "&proj.Example\metabolites.xlsx" out = metab_dat
 	dbms = xlsx replace;
 RUN;
-* check the number of subjects and observations in the dataset;
-proc sql; select count(*) as total_obs, count(distinct(subj_id)) as unique_pat from metab_dat; quit;
 
-/* Note about the data: subjects were identified as case or control and lab samples were taken at two timepoints during the study.
-There samples underwent targeted metabolomic analysis and a subset of the metabolites are included in this dataset. 
-	- subj_ID: unique subject identifier
-	- lab_ID: unique identifier for each individual lab sample
-	- case_control: case/control status for each subject, 1 = case and 2 = control
-	- time_point: T1 = visit 1, T2 = visit 2
-	- setnum: observations with the same number are matched case and control
-*/
 
 PROC FORMAT;
 	value cases_control 1 = 'Cases' 2 = 'Control';
@@ -36,11 +26,6 @@ DATA ana_metab;
 	label case_control = 'Case/control status';
 RUN;
 
-
-
-/***********************************************/
-/***             	VISIT 1                  ***/
-/***********************************************/
 
 DATA v1_only;
 	set ana_metab;
@@ -57,27 +42,60 @@ run;
 %mend;
 
 
+%macro tablecreate(oddsratio, pvalue);
+data Pvalueresult;
+ set pvalue;
+ if variable = "Intercept" then delete;
+ keep ProbChisq;
+run;
+proc sql;
+ select * 
+ from oddsratio as OddsRatio
+ left join Pvalueresult as P_Value
+ on OddsRatio.Effect;
+quit;
+%mend;
 
 %logi(_334_48_5);
-%logi(_3025_96_5);
-%logi(_5746_90_7);
-%logi(_80_69_3);
-%logi(_7664_38_2);
-%logi(_542_44_9);
-%logi(_57_88_5);
-%logi(_495_69_2);
-%logi(_99_50_3);
-%logi(_102_32_9);
+%tablecreate(oddsratio, pvalue);
 
-%TABLE(dsn = oddsratio, 
-		var = OddsRatioEst,
-		type = 1, 
-		outdoc = &proj.Example\Table_v3, TTITLE1 = Visit 1);
+/*proc sql;*/
+/*create table result_table(label= 'Metabolites preterm') as*/
+/*select **/
+/*from oddsratio, Pvalueresult*/
+/*where oddsratio.Effect;*/
+/*quit; */
 
-proc tabulate data = oddsratio;
-	var OddsRatioEst;
-	table OddsRatioEst;
-	title 'Table 4';
-run;
+
+
+
+/*%logi(_334_48_5);*/
+/*%logi(_3025_96_5);*/
+/*%logi(_5746_90_7);*/
+/*%logi(_80_69_3);*/
+/*%logi(_7664_38_2);*/
+/*%logi(_542_44_9);*/
+/*%logi(_57_88_5);*/
+/*%logi(_495_69_2);*/
+/*%logi(_99_50_3);*/
+/*%logi(_102_32_9);*/
+
+
+/*data Pvalueresult;*/
+/* set pvalue;*/
+/* if variable = "Intercept" then delete;*/
+/* keep ProbChisq;*/
+/*run;*/
+/**/
+/*proc print data = Pvalueresult;*/
+/*run;*/
+/*	*/
+/*proc sql;*/
+/*select * */
+/*from oddsratio as OddsRatio*/
+/*left join Pvalueresult as P_Value*/
+/*on OddsRatio.Effect;*/
+/*quit;*/
+
 	
 	
